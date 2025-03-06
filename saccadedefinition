@@ -1,0 +1,26 @@
+
+var
+threshold
+=
+0.3;
+// Cela peut être ajusté en fonction de vos besoins
+
+
+
+if (speedX
+>
+threshold) {
+
+    totalSaccadeCount++;
+
+}
+
+
+
+if (speedY
+>
+threshold) {
+
+    totalSaccadeCount++;
+
+}
