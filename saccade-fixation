@@ -1,0 +1,938 @@
+
+
+Envoyé à partir de Outlook pour Android
+From: Sérine Touahri <serinetouahri01@gmail.com>
+Sent: Thursday, March 6, 2025 9:12:21 PM
+To: Safia Bendjebar <bendjebar_s@hotmail.fr>
+Subject: tous les paramètres sont ici
+ 
+
+document.addEventListener('DOMContentLoaded',
+function () {
+
+    var
+viewPdfButtons
+=
+document.querySelectorAll('.view-pdf-btn');
+
+
+
+    viewPdfButtons.forEach(function
+ (button) {
+
+        button.addEventListener('click',
+function (event) {
+
+            event.preventDefault();
+// Empêche l'ouverture du lien par défaut
+
+            // Get the corresponding $id_cour from the current row
+
+            var
+courId
+=
+this.closest('tr').querySelector('#courId').value;
+
+            print(courId);
+
+            console.log("ID
+ of the current row's course:", 
+courId);
+
+            // Vérifiez si le bouton cliqué est celui de "Consult the chapter"
+
+            if (this.classList.contains('consult-btn'))
+ {
+
+                // Démarrer le suivi des yeux si ce n'est pas déjà le cas
+
+                if (!isEyeTrackingStarted())
+ {
+
+                    startEyeTrackingInHomeGrid();
+
+                }
+
+            }
+
+
+
+            // Supprimez la section "List of chapter In this module"
+
+            var
+chapterListSection
+=
+document.querySelector('.home-grid');
+
+            if (chapterListSection) {
+
+                chapterListSection.parentNode.removeChild(chapterListSection);
+
+            }
+
+            // create the cour id
+
+            // Create a new hidden input element for courId
+
+            var
+hiddenInput
+=
+document.createElement('input');
+
+            hiddenInput.setAttribute('type',
+'hidden');
+
+            hiddenInput.setAttribute('id',
+'courId');
+
+            hiddenInput.setAttribute('value',
+courId);
+
+
+
+            // Append the hidden input element to the body
+
+            document.body.appendChild(hiddenInput);
+
+            /////////////////// finish cour id creation
+
+            var
+pdfUrl
+=
+this.getAttribute('data-pdf-url');
+
+            var
+pdfContainer
+=
+document.createElement('div');
+
+            var
+embed
+=
+document.createElement('embed');
+
+
+
+            embed.setAttribute('src',
+pdfUrl);
+
+            embed.setAttribute('type',
+'application/pdf');
+
+            embed.setAttribute('width',
+'100%');
+
+            embed.setAttribute('height',
+'1000px');
+
+
+
+            pdfContainer.appendChild(embed);
+
+
+
+            // Insérez la section PDF après la section supprimée
+
+            var
+mainContent
+=
+document.querySelector('body');
+
+            mainContent.appendChild(pdfContainer);
+
+        });
+
+    });
+
+});
+
+
+
+// Fonction pour démarrer le suivi des yeux uniquement dans la partie du "home grid"
+
+function
+startEyeTrackingInHomeGrid() {
+
+    // Vérifier si le suivi des yeux n'a pas déjà commencé
+
+    if (!isEyeTrackingStarted())
+ {
+
+        // Initialiser les variables pour la zone restreinte du suivi
+
+        var
+homeGridSection
+=
+document.querySelector('.home-grid');
+
+        var
+homeGridRect
+=
+homeGridSection.getBoundingClientRect();
+
+
+
+
+
+
+
+        
+
+
+
+        var
+coordinates
+= [];
+
+var
+prevX,
+prevY,
+prevTime;
+// Variables pour stocker les coordonnées précédentes et le temps précédent
+
+var
+totalDuration
+=
+0;
+// Variable pour stocker la somme des durées
+
+// Fonction pour sauvegarder les coordonnées
+
+// Fonction pour enregistrer les coordonnées lorsque l'utilisateur quitte la page
+
+
+
+// Déclaration des variables globales pour stocker les valeurs de vitesse moyenne
+
+var
+averageSpeedX
+=
+0;
+
+var
+averageSpeedY
+=
+0;
+
+
+
+var
+totalFixationsCount
+=
+0;
+
+
+
+var
+totalSaccadeCount
+=
+0;
+
+
+
+
+
+
+
+function
+saveCoordinatesOnUnload(EA) {
+
+    // Récupérer les éléments avec les ID 'studentId' et 'courId' dans le DOM
+
+    var
+studentIdElement
+=
+document.getElementById("studentId");
+
+    var
+courIdElement
+=
+document.getElementById("courId");
+
+    var
+moduleIdElement
+=
+document.getElementById("moduleId");
+
+   
+
+    // Vérifier si les éléments existent dans le DOM
+
+    if (studentIdElement
+&&
+courIdElement
+&&
+moduleIdElement) {
+
+        // Récupérer les valeurs des éléments
+
+        var
+studentId
+=
+parseInt(studentIdElement.value);
+
+        var
+courId
+=
+parseInt(courIdElement.value);
+
+        var
+moduleId
+=
+parseInt(moduleIdElement.value);
+
+        
+
+
+
+        // Vérifier si les variables de coordonnées sont définies
+
+        if (typeof
+averageSpeedX
+!==
+'undefined'
+&&
+typeof
+averageSpeedY
+!==
+'undefined'
+&&
+
+            typeof
+totalFixationsCount
+!==
+'undefined'
+&&
+typeof
+totalSaccadeCount
+!==
+'undefined') {
+
+
+
+            // Créer un objet FormData pour les données à envoyer
+
+            var
+data
+=
+new
+FormData();
+
+            data.append("studentId",
+studentId);
+
+            data.append("courId",
+courId);
+
+            data.append("moduleId",
+moduleId);
+
+            data.append("averageSpeedX",
+averageSpeedX);
+
+            data.append("averageSpeedY",
+averageSpeedY);
+
+            data.append("totalFixationsCount",
+totalFixationsCount);
+
+            data.append("totalSaccadeCount",
+totalSaccadeCount);
+
+            data.append("EA",
+EA);
+
+          
+
+            //console.log("cour:",courId);
+
+            // Créer une requête XMLHttpRequest
+
+            var
+xhr
+=
+new
+XMLHttpRequest();
+
+            xhr.open('POST',
+'http://localhost/PFE/etudiant/save.php',
+true);
+
+            xhr.onload
+=
+function () {
+
+                if (xhr.status
+===
+200) {
+
+                    console.log('Données
+ envoyées avec succès !');
+
+                  
+
+                } else {
+
+                    console.error('Une
+ erreur est survenue lors de la requête : '
++
+xhr.status);
+
+                }
+
+            };
+
+            xhr.onerror
+=
+function () {
+
+                console.error('Erreur
+ de connexion au serveur.');
+
+            };
+
+
+
+            // Envoyer la requête avec les données FormData
+
+            xhr.send(data);
+
+        } else {
+
+            console.error("Les
+ variables de coordonnées ne sont pas définies.");
+
+        }
+
+
+
+    } else {
+
+        // Afficher une erreur si les éléments ne sont pas trouvés dans le DOM
+
+        if (!studentIdElement)
+ {
+
+            console.error("Element
+ with ID 'studentId' not found in the DOM.");
+
+        }
+
+        if (!courIdElement)
+ {
+
+            console.error("Element
+ with ID 'courId' not found in the DOM.");
+
+        }
+
+        if (!moduleIdElement)
+ {
+
+            console.error("Element
+ with ID 'moduleId' not found in the DOM.");
+
+        }
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+// Fonction pour calculer la vitesse moyenne
+
+function
+calculateAverageSpeed() {
+
+var
+totalSpeedX
+=
+0;
+
+var
+totalSpeedY
+=
+0;
+
+var
+totalTime
+=
+0;
+// Variable pour stocker la somme totale des durées
+
+
+
+for (var
+i
+=
+1;
+i
+<
+coordinates.length;
+i++) {
+
+    var
+coord
+=
+coordinates[i];
+
+    var
+prevCoord
+=
+coordinates[i
+-
+1];
+
+
+
+    var
+deltaTime
+=
+coord.time
+-
+prevCoord.time;
+
+    totalTime
++=
+deltaTime;
+
+
+
+    totalSpeedX
++=
+coord.speedX
+*
+deltaTime;
+
+    totalSpeedY
++=
+coord.speedY
+*
+deltaTime;
+
+}
+
+
+
+
+
+ averageSpeedX
+= (totalSpeedX
+/
+totalTime).toFixed(3);
+
+ averageSpeedY
+= (totalSpeedY
+/
+totalTime).toFixed(3);
+
+
+
+//console.log("Vitesse moyenne sur l'axe X: " + averageSpeedX + ", sur l'axe Y: " + averageSpeedY);
+
+
+
+  // Appeler la fonction pour sauvegarder les valeurs de vitesse moyenne
+
+  saveCoordinatesOnUnload();
+
+}
+
+
+
+function
+calculateEA() {
+
+    var
+weightAverageSpeedX
+=
+0.2;
+
+    var
+weightAverageSpeedY
+=
+0.2;
+
+    var
+weightTotalFixations
+=
+0.3;
+
+    var
+weightTotalSaccades
+=
+0.3;
+
+
+
+    var
+EA
+= (weightAverageSpeedX
+*
+averageSpeedX)
++
+
+             (weightAverageSpeedY
+*
+averageSpeedY)
++
+
+             (weightTotalFixations
+*
+totalFixationsCount)
++
+
+             (weightTotalSaccades
+*
+totalSaccadeCount);
+
+
+
+    return
+EA.toFixed(3);
+
+    
+
+}
+
+
+
+
+
+// Gestionnaire d'événements WebGazer
+
+var
+time
+=
+0;
+
+webgazer.setGazeListener(function(data,
+elapsedTime) {
+
+if (elapsedTime
+-
+time
+>=
+2000
+&&
+data
+!==
+null) {
+
+    var
+xPrediction
+=
+data.x;
+
+    var
+yPrediction
+=
+data.y;
+
+
+
+    // Calculer la vitesse du changement de regard
+
+    if (prevX
+!==
+undefined
+&&
+prevY
+!==
+undefined
+&&
+prevTime
+!==
+undefined) {
+
+        var
+deltaX
+=
+xPrediction
+-
+prevX;
+
+        var
+deltaY
+=
+yPrediction
+-
+prevY;
+
+        var
+deltaTime
+=
+elapsedTime
+-
+prevTime;
+
+
+
+        // Vitesse sur l'axe x
+
+        var
+speedX
+=
+Math.abs(deltaX
+/
+deltaTime);
+
+
+
+        // Vitesse sur l'axe y
+
+        var
+speedY
+=
+Math.abs(deltaY
+/
+deltaTime);
+
+
+
+        speedX
+=
+speedX.toFixed(3);
+
+        speedY
+=
+speedY.toFixed(3);
+
+
+
+        console.log("Vitesse
+ de changement sur l'axe X: " 
++
+speedX
++
+", sur l'axe Y: "
++
+speedY);
+
+
+
+        // Ajouter les vitesses au point de données actuel
+
+        coordinates.push({
+x:
+xPrediction,
+y:
+yPrediction,
+speedX:
+speedX,
+speedY:
+speedY,
+time:
+Date.now() });
+
+
+
+        // Ajouter la durée actuelle à la somme totale des durées
+
+        totalDuration
++=
+deltaTime;
+
+    }
+
+
+
+    // Réinitialiser le temps pour le prochain intervalle de 2 secondes
+
+    time
+=
+elapsedTime;
+
+
+
+    // Sauvegarder les coordonnées actuelles et le temps actuel pour les prochaines itérations
+
+    prevX
+=
+xPrediction;
+
+    prevY
+=
+yPrediction;
+
+    prevTime
+=
+elapsedTime;
+
+
+
+
+
+// Définir les intervalles aléatoires pour les valeurs de x et y
+
+var
+randomXInterval
+= [200,
+300];
+//  entre  pixels
+
+var
+randomYInterval
+= [200,
+300];
+//  entre pixels
+
+// Fonction pour vérifier si les coordonnées se trouvent dans les intervalles spécifiés
+
+function
+isWithinInterval(coord,
+interval) {
+
+    return
+coord
+>=
+interval[0]
+&&
+coord
+<=
+interval[1];
+
+}
+
+
+
+// Vérifier si les fixations se trouvent dans les intervalles spécifiés
+
+if (isWithinInterval(xPrediction,
+randomXInterval)) {
+
+    totalFixationsCount++;
+
+    
+
+}
+
+
+
+if (isWithinInterval(yPrediction,
+randomYInterval)) {
+
+    totalFixationsCount++;
+
+   
+
+}
+
+
+
+// Vérifier si la vitesse dépasse un seuil pour être considérée comme une saccade
+
+var
+threshold
+=
+0.3;
+// Cela peut être ajusté en fonction de vos besoins
+
+
+
+if (speedX
+>
+threshold) {
+
+    totalSaccadeCount++;
+
+}
+
+
+
+if (speedY
+>
+threshold) {
+
+    totalSaccadeCount++;
+
+}
+
+
+
+
+
+}
+
+}).begin();
+
+
+
+// Fonction pour réinitialiser les compteurs de fixation
+
+
+
+  
+
+
+
+// Définir un intervalle pour calculer la vitesse moyenne toutes les 100 secondes
+
+setInterval(function() {
+
+    
+
+calculateAverageSpeed();
+
+
+
+
+
+var
+EA
+=
+calculateEA();
+
+            saveCoordinatesOnUnload(EA);
+
+
+
+// Réinitialiser les données pour les deux prochaines secondes
+
+coordinates.length
+=
+0;
+
+totalDuration
+=
+0;
+
+totalFixationsCount
+=
+0;
+
+totalSaccadeCount
+=
+0;
+
+
+
+
+
+},100000);
+// 100000 millisecondes équivalent à 100 secondes
+
+
+
+    }
+
+}
+
+
+
+// Fonction pour vérifier si le suivi des yeux est déjà démarré
+
+function
+isEyeTrackingStarted() {
+
+    return
+webgazer.isReady();
+
+}
